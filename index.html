@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome • Sign in or Create account</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #0b1020;
+        --bg-accent: #0f1630;
+        --card: #0f152b;
+        --text: #e6eaf2;
+        --muted: #a9b1c6;
+        --primary: #6aa0ff;
+        --primary-600: #4b86ff;
+        --ring: rgba(106, 160, 255, 0.35);
+        --error: #ff6b6b;
+        --success: #36d399;
+        --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      }
+
+      /* Explicit theme overrides */
+      html[data-theme="dark"] {
+        --bg: #0b1020;
+        --bg-accent: #0f1630;
+        --card: #0f152b;
+        --text: #e6eaf2;
+        --muted: #a9b1c6;
+        --primary: #6aa0ff;
+        --primary-600: #4b86ff;
+        --ring: rgba(106, 160, 255, 0.35);
+        --error: #ff6b6b;
+        --success: #36d399;
+        --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      }
+
+      html[data-theme="light"] {
+        --bg: #f5f7fb;
+        --bg-accent: #eef1f8;
+        --card: #ffffff;
+        --text: #0d1224;
+        --muted: #5b647a;
+        --primary: #246bfd;
+        --primary-600: #1c5ae0;
+        --ring: rgba(36, 107, 253, 0.25);
+        --error: #d92d20;
+        --success: #039855;
+        --shadow: 0 10px 30px rgba(16,24,40,0.08);
+      }
+
+      /* Fallback to system when no explicit preference is set */
+      @media (prefers-color-scheme: light) {
+        :root:not([data-theme]) {
+          --bg: #f5f7fb;
+          --bg-accent: #eef1f8;
+          --card: #ffffff;
+          --text: #0d1224;
+          --muted: #5b647a;
+          --primary: #246bfd;
+          --primary-600: #1c5ae0;
+          --ring: rgba(36, 107, 253, 0.25);
+          --error: #d92d20;
+          --success: #039855;
+          --shadow: 0 10px 30px rgba(16,24,40,0.08);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        color: var(--text);
+        background: radial-gradient(1200px 800px at 80% -10%, rgba(106,160,255,0.2), transparent 60%),
+                    radial-gradient(1200px 800px at 10% 110%, rgba(54,211,153,0.12), transparent 60%),
+                    linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .auth-shell {
+        position: relative;
+        width: 100%;
+        max-width: 980px;
+        min-height: 640px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+      }
+
+      .art {
+        position: relative;
+        background:
+          radial-gradient(600px 300px at 20% 10%, rgba(36,107,253,0.25), transparent 50%),
+          radial-gradient(500px 300px at 80% 90%, rgba(54,211,153,0.18), transparent 50%),
+          linear-gradient(120deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .art .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--primary), #7bc4ff);
+        box-shadow: 0 6px 16px rgba(106,160,255,0.4);
+      }
+
+      .art h2 {
+        margin: 20px 0 12px;
+        font-size: 28px;
+      }
+      .art p { color: var(--muted); margin: 0; }
+
+      .badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+      .badge {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        font-size: 12px;
+      }
+
+      .card {
+        background: var(--card);
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        border-top-left-radius: 16px;
+        border-bottom-left-radius: 16px;
+      }
+
+      .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .tab-btn {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .tab-btn[aria-selected="true"] {
+        color: var(--text);
+        background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+      }
+
+      form { display: grid; gap: 14px; }
+      .field { display: grid; gap: 8px; }
+      .field label { font-size: 14px; color: var(--muted); }
+      .input {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 10px 12px;
+        transition: box-shadow 180ms ease, border-color 180ms ease;
+      }
+      .input:focus-within { box-shadow: 0 0 0 4px var(--ring); border-color: var(--primary); }
+      .input input {
+        outline: none;
+        border: none;
+        background: transparent;
+        color: var(--text);
+        width: 100%;
+        font-size: 15px;
+      }
+      .muted { color: var(--muted); font-size: 14px; }
+
+      .controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+      .checkbox { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+      .actions { display: grid; gap: 10px; }
+      .btn {
+        appearance: none;
+        border: 0;
+        cursor: pointer;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 600;
+        transition: transform 120ms ease, box-shadow 180ms ease, background 180ms ease;
+      }
+      .btn-primary {
+        color: white;
+        background: linear-gradient(180deg, var(--primary), var(--primary-600));
+        box-shadow: 0 10px 20px rgba(36,107,253,0.25);
+      }
+      .btn-primary:hover { transform: translateY(-1px); }
+      .btn-ghost { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.12); }
+
+      .divider { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+      .divider::before, .divider::after { content: ""; height: 1px; background: rgba(255,255,255,0.1); }
+
+      .social { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .social .btn { background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); color: var(--text); }
+
+      .hint { font-size: 13px; color: var(--muted); text-align: center; }
+      .error { color: var(--error); font-size: 13px; }
+      .success { color: var(--success); font-size: 13px; }
+
+      .password-toggle { cursor: pointer; color: var(--muted); font-size: 13px; user-select: none; }
+
+      /* Password strength + caps lock */
+      .hint-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+      .strength { height: 6px; border-radius: 6px; background: rgba(255,255,255,0.12); overflow: hidden; }
+      .strength > span { display: block; height: 100%; width: 0%; background: var(--error); transition: width 200ms ease, background 200ms ease; }
+      .caps { color: var(--error); font-size: 12px; visibility: hidden; }
+
+      /* Toasts */
+      .toasts { position: fixed; right: 16px; bottom: 16px; display: grid; gap: 8px; z-index: 50; }
+      .toast { min-width: 220px; padding: 12px 14px; border-radius: 12px; color: var(--text); border: 1px solid rgba(255,255,255,0.12); background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04)); box-shadow: var(--shadow); }
+      .toast.success { border-color: rgba(3,152,85,0.4); }
+      .toast.error { border-color: rgba(217,45,32,0.5); }
+
+      /* Loading state */
+      .btn[disabled] { opacity: 0.7; cursor: not-allowed; }
+      .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; display: inline-block; animation: spin 0.8s linear infinite; vertical-align: -3px; margin-right: 8px; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* Small inline buttons */
+      .mini-btn { color: var(--text); background: transparent; border: 1px solid rgba(255,255,255,0.14); padding: 6px 8px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+      .mini-actions { display: inline-flex; gap: 8px; align-items: center; }
+      .email-suggest { font-size: 12px; color: var(--muted); }
+      .email-suggest button { margin-left: 6px; }
+
+      /* 2FA Modal */
+      .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 60; }
+      .modal-backdrop[aria-hidden="false"] { display: flex; }
+      .modal { width: 100%; max-width: 420px; background: var(--card); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: var(--shadow); padding: 22px; }
+      .modal h3 { margin: 0 0 6px; }
+      .modal p { margin: 0 0 14px; color: var(--muted); }
+      .code-inputs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 12px 0 8px; }
+      .code-inputs input { text-align: center; font-size: 20px; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); color: var(--text); }
+      .modal .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .link-btn { background: transparent; border: 0; color: var(--primary); font-weight: 600; cursor: pointer; }
+
+      /* Panel transition */
+      .panel-wrap { position: relative; min-height: 460px; }
+      .panel { position: absolute; inset: 0; opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; }
+      .panel.active-anim { opacity: 1; transform: translateY(0); pointer-events: auto; }
+      .panel.hidden-anim { opacity: 0; transform: translateY(8px); pointer-events: none; }
+
+      /* Theme toggle button */
+      .theme-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 10;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+        color: var(--text);
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .theme-toggle .dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 0 4px var(--ring);
+      }
+
+      /* Watermark */
+      .watermark {
+        position: fixed;
+        left: 50%;
+        bottom: 8px;
+        transform: translateX(-50%);
+        color: var(--muted);
+        opacity: 0.6;
+        font-size: 12px;
+        letter-spacing: 0.4px;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      @media (max-width: 920px) {
+        .auth-shell { grid-template-columns: 1fr; }
+        .card { border-radius: 0; }
+        .art { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" aria-pressed="false">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="theme-toggle-text">Dark</span>
+    </button>
+    <main class="auth-shell" role="main">
+      <section class="art" aria-hidden="true">
+        <div>
+          <div class="brand"><div class="logo" aria-hidden="true"></div> System</div>
+          <h2>Welcome back</h2>
+          <p>Sign in or create an account to continue to your dashboard.</p>
+          <div class="badges">
+            <span class="badge">Fast onboarding</span>
+            <span class="badge">Secure by design</span>
+            <span class="badge">24/7 support</span>
+          </div>
+        </div>
+        <div class="hint">By continuing, you agree to our <a href="#" style="color:var(--text);">Terms</a> and <a href="#" style="color:var(--text);">Privacy</a>.</div>
+      </section>
+
+      <section class="card" aria-labelledby="authTitle">
+        <div>
+          <h1 id="authTitle" style="margin:0 0 8px; font-size:24px;">Get Started</h1>
+          <p class="muted" style="margin:0 0 14px;">Use your email to sign in or register.</p>
+          <div class="tabs" role="tablist" aria-label="Authentication">
+            <button id="tab-login" class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-login">Sign in</button>
+            <button id="tab-register" class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-register">Create account</button>
+          </div>
+        </div>
+
+        <div class="panel-wrap">
+        <div id="panel-login" class="panel active-anim" role="tabpanel" aria-labelledby="tab-login">
+          <form id="form-login" novalidate>
+            <div class="field">
+              <label for="login-email">Email</label>
+              <div class="input"><input id="login-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required aria-required="true"></div>
+              <div class="error" id="login-email-error" aria-live="polite"></div>
+              <div class="email-suggest" id="login-email-suggest" aria-live="polite"></div>
+            </div>
+            <div class="field">
+              <label for="login-password">Password</label>
+              <div class="input">
+                <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" minlength="6" required aria-required="true">
+                <span class="password-toggle" data-target="login-password">Show</span>
+              </div>
+              <div class="hint-row">
+                <div class="error" id="login-password-error" aria-live="polite"></div>
+                <div class="caps" id="login-caps">Caps Lock is ON</div>
+              </div>
+            </div>
+            <div class="controls">
+              <label class="checkbox"><input type="checkbox" id="remember" name="remember"> Remember me</label>
+              <a href="#" class="muted">Forgot password?</a>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" id="login-submit" type="submit">Sign in</button>
+              <div class="divider">or continue with</div>
+              <div class="social">
+                <button type="button" class="btn" aria-label="Continue with Google">Google</button>
+                <button type="button" class="btn" aria-label="Continue with GitHub">GitHub</button>
+              </div>
+            </div>
+            <p class="hint">Prefer a code? <button type="button" class="link-btn" id="login-otp">Use email OTP</button></p>
+            <p class="hint">New here? <button type="button" class="btn btn-ghost" id="go-register" style="padding:6px 10px; font-size:14px;">Create account</button></p>
+          </form>
+        </div>
+
+        <div id="panel-register" class="panel hidden-anim" role="tabpanel" aria-labelledby="tab-register" hidden>
+          <form id="form-register" novalidate>
+            <div class="field">
+              <label for="reg-name">Full name</label>
+              <div class="input"><input id="reg-name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required aria-required="true"></div>
+              <div class="error" id="reg-name-error" aria-live="polite"></div>
+            </div>
+            <div class="field">
+              <label for="reg-email">Email</label>
+              <div class="input"><input id="reg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required aria-required="true"></div>
+              <div class="error" id="reg-email-error" aria-live="polite"></div>
+              <div class="email-suggest" id="reg-email-suggest" aria-live="polite"></div>
+            </div>
+            <div class="field">
+              <label for="reg-password">Password</label>
+              <div class="input">
+                <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required aria-required="true">
+                <span class="password-toggle" data-target="reg-password">Show</span>
+                <div class="mini-actions">
+                  <button type="button" id="gen-pass" class="mini-btn" aria-label="Generate strong password">Generate</button>
+                  <button type="button" id="copy-pass" class="mini-btn" aria-label="Copy password">Copy</button>
+                </div>
+              </div>
+              <div class="hint-row">
+                <div class="error" id="reg-password-error" aria-live="polite"></div>
+                <div class="caps" id="reg-caps">Caps Lock is ON</div>
+              </div>
+              <div class="strength" aria-hidden="true"><span id="reg-strength-bar"></span></div>
+            </div>
+            <div class="field">
+              <label for="reg-confirm">Confirm password</label>
+              <div class="input">
+                <input id="reg-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Repeat your password" minlength="6" required aria-required="true">
+                <span class="password-toggle" data-target="reg-confirm">Show</span>
+              </div>
+              <div class="error" id="reg-confirm-error" aria-live="polite"></div>
+            </div>
+            <div class="field">
+              <label class="checkbox"><input type="checkbox" id="reg-terms" required aria-required="true"> I agree to the <a href="#">Terms</a> and <a href="#">Privacy</a></label>
+              <div class="error" id="reg-terms-error" aria-live="polite"></div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" id="reg-submit" type="submit">Create account</button>
+              <div class="divider">or continue with</div>
+              <div class="social">
+                <button type="button" class="btn" aria-label="Continue with Google">Google</button>
+                <button type="button" class="btn" aria-label="Continue with GitHub">GitHub</button>
+              </div>
+            </div>
+            <p class="hint">Already have an account? <button type="button" class="btn btn-ghost" id="go-login" style="padding:6px 10px; font-size:14px;">Sign in</button></p>
+          </form>
+        </div>
+        </div>
+      </section>
+    </main>
+    <div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
+    <div class="watermark">system by apizzz</div>
+    <!-- 2FA Modal -->
+    <div id="twofa" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="twofa-title">
+      <div class="modal">
+        <h3 id="twofa-title">Two‑step verification</h3>
+        <p>Enter the 6‑digit code from your authenticator app or email.</p>
+        <div class="code-inputs" id="twofa-inputs">
+          <input inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="Digit 1">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 2">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 3">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 4">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 5">
+          <input inputmode="numeric" maxlength="1" aria-label="Digit 6">
+        </div>
+        <div class="row">
+          <button id="twofa-submit" class="btn btn-primary" style="flex:1">Verify</button>
+          <button id="twofa-cancel" class="btn btn-ghost" style="flex:1">Cancel</button>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <span class="muted">Didn't get a code?</span>
+          <button id="twofa-resend" class="link-btn" type="button">Resend</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Theme: initialize from localStorage or system preference
+      (function initTheme() {
+        const root = document.documentElement;
+        const stored = localStorage.getItem('theme');
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        const theme = stored || (prefersLight ? 'light' : 'dark');
+        root.setAttribute('data-theme', theme);
+        const btn = document.getElementById('theme-toggle');
+        const label = document.getElementById('theme-toggle-text');
+        if (btn && label) {
+          const isDark = theme === 'dark';
+          btn.setAttribute('aria-pressed', String(isDark));
+          label.textContent = isDark ? 'Light' : 'Dark';
+        }
+      })();
+
+      // Theme: toggle handler
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const root = document.documentElement;
+        const current = root.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        const btn = document.getElementById('theme-toggle');
+        const label = document.getElementById('theme-toggle-text');
+        const isDark = next === 'dark';
+        btn.setAttribute('aria-pressed', String(isDark));
+        label.textContent = isDark ? 'Light' : 'Dark';
+      });
+
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      const panelLogin = document.getElementById('panel-login');
+      const panelRegister = document.getElementById('panel-register');
+      const goRegister = document.getElementById('go-register');
+      const goLogin = document.getElementById('go-login');
+
+      function selectTab(which) {
+        const isLogin = which === 'login';
+        tabLogin.setAttribute('aria-selected', String(isLogin));
+        tabRegister.setAttribute('aria-selected', String(!isLogin));
+        // Animate panels
+        const incoming = isLogin ? panelLogin : panelRegister;
+        const outgoing = isLogin ? panelRegister : panelLogin;
+        incoming.hidden = false;
+        incoming.classList.add('active-anim');
+        incoming.classList.remove('hidden-anim');
+        outgoing.classList.add('hidden-anim');
+        outgoing.classList.remove('active-anim');
+        setTimeout(() => { outgoing.hidden = true; }, 230);
+        const title = document.getElementById('authTitle');
+        title.textContent = isLogin ? 'Welcome back' : 'Create your account';
+        (isLogin ? document.getElementById('login-email') : document.getElementById('reg-name')).focus();
+        try { localStorage.setItem('activeTab', which); } catch {}
+      }
+
+      tabLogin.addEventListener('click', () => selectTab('login'));
+      tabRegister.addEventListener('click', () => selectTab('register'));
+      // Restore persisted tab
+      (function restoreTab(){
+        try {
+          const saved = localStorage.getItem('activeTab');
+          if (saved === 'register') selectTab('register');
+        } catch {}
+      })();
+      if (goRegister) goRegister.addEventListener('click', () => selectTab('register'));
+      if (goLogin) goLogin.addEventListener('click', () => selectTab('login'));
+      const loginOtpBtn = document.getElementById('login-otp');
+      if (loginOtpBtn) {
+        loginOtpBtn.addEventListener('click', () => startEmailOTP());
+      }
+
+      // Password visibility toggles (click to toggle, hold to view)
+      document.querySelectorAll('.password-toggle').forEach((el) => {
+        const targetId = el.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        function setVisible(v) { input.type = v ? 'text' : 'password'; el.textContent = v ? 'Hide' : 'Show'; }
+        el.addEventListener('click', () => { setVisible(input.type !== 'text'); });
+        el.addEventListener('mousedown', () => setVisible(true));
+        el.addEventListener('mouseup', () => setVisible(false));
+        el.addEventListener('mouseleave', () => setVisible(false));
+        el.addEventListener('touchstart', (e) => { e.preventDefault(); setVisible(true); }, { passive: false });
+        el.addEventListener('touchend', () => setVisible(false));
+      });
+
+      // Simple form validation helpers
+      function showError(id, message) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = message || '';
+      }
+      function isEmail(value) {
+        return /\S+@\S+\.\S+/.test(value);
+      }
+
+      // Email domain suggestion
+      const COMMON_DOMAINS = ['gmail.com','yahoo.com','hotmail.com','outlook.com','icloud.com','live.com','aol.com','proton.me'];
+      function suggestEmailFix(value) {
+        if (!value || !value.includes('@')) return null;
+        const [local, domain] = value.split('@');
+        if (!domain) return null;
+        // Find closest domain by Levenshtein distance (simple)
+        let best = null, bestScore = Infinity;
+        for (const d of COMMON_DOMAINS) {
+          const s = levenshtein(domain, d);
+          if (s < bestScore) { bestScore = s; best = d; }
+        }
+        if (best && best !== domain && bestScore <= 2) return local + '@' + best;
+        return null;
+      }
+      function levenshtein(a, b) {
+        const m = a.length, n = b.length;
+        const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+        for (let i = 0; i <= m; i++) dp[i][0] = i;
+        for (let j = 0; j <= n; j++) dp[0][j] = j;
+        for (let i = 1; i <= m; i++) {
+          for (let j = 1; j <= n; j++) {
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+            dp[i][j] = Math.min(
+              dp[i - 1][j] + 1,
+              dp[i][j - 1] + 1,
+              dp[i - 1][j - 1] + cost
+            );
+          }
+        }
+        return dp[m][n];
+      }
+      function wireEmailSuggest(inputId, suggestId) {
+        const input = document.getElementById(inputId);
+        const box = document.getElementById(suggestId);
+        if (!input || !box) return;
+        input.addEventListener('blur', () => {
+          const fix = suggestEmailFix(input.value.trim());
+          if (fix) {
+            box.innerHTML = `Did you mean <button type="button" class="mini-btn" data-fix="${fix}">${fix}</button>?`;
+            const btn = box.querySelector('button[data-fix]');
+            if (btn) btn.addEventListener('click', () => { input.value = fix; box.textContent = ''; });
+          } else {
+            box.textContent = '';
+          }
+        });
+      }
+      wireEmailSuggest('login-email','login-email-suggest');
+      wireEmailSuggest('reg-email','reg-email-suggest');
+
+      // Real-time validation: enable submit only when inputs look valid
+      function enableWhenValid(formId, submitId, checks) {
+        const submit = document.getElementById(submitId);
+        const form = document.getElementById(formId);
+        if (!submit || !form) return;
+        function recompute() {
+          const ok = checks();
+          submit.disabled = !ok;
+        }
+        form.addEventListener('input', recompute);
+        form.addEventListener('change', recompute);
+        recompute();
+      }
+      enableWhenValid('form-login', 'login-submit', () => {
+        const email = document.getElementById('login-email').value.trim();
+        const pw = document.getElementById('login-password').value;
+        return isEmail(email) && pw.length >= 6;
+      });
+      enableWhenValid('form-register', 'reg-submit', () => {
+        const name = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const pw = document.getElementById('reg-password').value;
+        const cf = document.getElementById('reg-confirm').value;
+        const terms = document.getElementById('reg-terms');
+        return !!name && isEmail(email) && pw.length >= 6 && cf === pw && (!!terms && terms.checked);
+      });
+
+      // Password generator + copy
+      function generatePassword() {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{};:,.<>?';
+        const length = 14;
+        let out = '';
+        const cryptoObj = window.crypto || window.msCrypto;
+        if (cryptoObj && cryptoObj.getRandomValues) {
+          const buf = new Uint32Array(length);
+          cryptoObj.getRandomValues(buf);
+          for (let i = 0; i < length; i++) out += chars[buf[i] % chars.length];
+        } else {
+          for (let i = 0; i < length; i++) out += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return out;
+      }
+      const genBtn = document.getElementById('gen-pass');
+      const copyBtn = document.getElementById('copy-pass');
+      if (genBtn) {
+        genBtn.addEventListener('click', () => {
+          const input = document.getElementById('reg-password');
+          const pw = generatePassword();
+          input.value = pw;
+          updateStrengthBar(pw);
+          showToast('Strong password generated.','success');
+        });
+      }
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const input = document.getElementById('reg-password');
+          try {
+            await navigator.clipboard.writeText(input.value);
+            showToast('Password copied to clipboard.','success');
+          } catch {
+            showToast('Could not copy password.','error');
+          }
+        });
+      }
+      // Toast helper
+      function showToast(message, kind = 'success', timeout = 2600) {
+        const wrap = document.getElementById('toasts');
+        if (!wrap) return;
+        const el = document.createElement('div');
+        el.className = `toast ${kind}`;
+        el.textContent = message;
+        wrap.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(6px)'; }, timeout - 300);
+        setTimeout(() => el.remove(), timeout);
+      }
+
+      // Password strength meter
+      function calcStrength(pw) {
+        let score = 0;
+        if (pw.length >= 6) score++;
+        if (pw.length >= 10) score++;
+        if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+        if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++;
+        return Math.min(score, 4);
+      }
+      function updateStrengthBar(value) {
+        const bar = document.getElementById('reg-strength-bar');
+        if (!bar) return;
+        const score = calcStrength(value);
+        const perc = [0, 25, 50, 75, 100][score];
+        bar.style.width = perc + '%';
+        const colors = ['#ff6b6b', '#f59e0b', '#3b82f6', '#10b981', '#10b981'];
+        bar.style.background = colors[score];
+      }
+
+      // Caps Lock detection
+      function bindCaps(inputId, hintId) {
+        const input = document.getElementById(inputId);
+        const hint = document.getElementById(hintId);
+        if (!input || !hint) return;
+        function setState(on) { hint.style.visibility = on ? 'visible' : 'hidden'; }
+        input.addEventListener('keydown', (e) => setState(e.getModifierState && e.getModifierState('CapsLock')));
+        input.addEventListener('keyup', (e) => setState(e.getModifierState && e.getModifierState('CapsLock')));
+        input.addEventListener('blur', () => setState(false));
+      }
+      bindCaps('login-password', 'login-caps');
+      bindCaps('reg-password', 'reg-caps');
+
+      // Remember-me persistence
+      (function initRemember() {
+        try {
+          const savedEmail = localStorage.getItem('rememberEmail');
+          const savedFlag = localStorage.getItem('rememberMe') === 'true';
+          const emailInput = document.getElementById('login-email');
+          const remember = document.getElementById('remember');
+          if (savedFlag && savedEmail && emailInput && remember) {
+            emailInput.value = savedEmail;
+            remember.checked = true;
+          }
+        } catch {}
+      })();
+
+      document.getElementById('form-login').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email');
+        const password = document.getElementById('login-password');
+        const submit = document.getElementById('login-submit');
+        let ok = true;
+        if (!isEmail(email.value)) { showError('login-email-error', 'Enter a valid email.'); ok = false; } else { showError('login-email-error'); }
+        if (!password.value || password.value.length < 6) { showError('login-password-error', 'Password must be at least 6 characters.'); ok = false; } else { showError('login-password-error'); }
+        if (ok) {
+          // Loading state
+          const old = submit.textContent;
+          submit.disabled = true;
+          submit.innerHTML = '<span class="spinner"></span>Signing in...';
+          setTimeout(() => {
+            try {
+              const remember = document.getElementById('remember');
+              if (remember && remember.checked) {
+                localStorage.setItem('rememberEmail', email.value);
+                localStorage.setItem('rememberMe', 'true');
+              } else {
+                localStorage.removeItem('rememberEmail');
+                localStorage.setItem('rememberMe', 'false');
+              }
+            } catch {}
+            // Proceed to 2FA step (demo)
+            submit.disabled = false;
+            submit.textContent = old;
+            open2FA();
+          }, 900);
+        }
+      });
+
+      // Email OTP flow (demo)
+      function startEmailOTP() {
+        const email = document.getElementById('login-email').value.trim();
+        if (!isEmail(email)) { showError('login-email-error', 'Enter your email first.'); return; }
+        showToast('OTP sent to ' + email, 'success');
+        open2FA();
+      }
+
+      document.getElementById('form-register').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('reg-name');
+        const email = document.getElementById('reg-email');
+        const password = document.getElementById('reg-password');
+        const confirm = document.getElementById('reg-confirm');
+        const submit = document.getElementById('reg-submit');
+        const terms = document.getElementById('reg-terms');
+        let ok = true;
+        if (!name.value.trim()) { showError('reg-name-error', 'Please enter your name.'); ok = false; } else { showError('reg-name-error'); }
+        if (!isEmail(email.value)) { showError('reg-email-error', 'Enter a valid email.'); ok = false; } else { showError('reg-email-error'); }
+        if (!password.value || password.value.length < 6) { showError('reg-password-error', 'Password must be at least 6 characters.'); ok = false; } else { showError('reg-password-error'); }
+        if (confirm.value !== password.value) { showError('reg-confirm-error', 'Passwords do not match.'); ok = false; } else { showError('reg-confirm-error'); }
+        if (!terms || !terms.checked) { showError('reg-terms-error', 'You must agree to continue.'); ok = false; } else { showError('reg-terms-error'); }
+        if (ok) {
+          const old = submit.textContent;
+          submit.disabled = true;
+          submit.innerHTML = '<span class="spinner"></span>Creating...';
+          setTimeout(() => {
+            showToast('Account created (demo). Please sign in.', 'success');
+            submit.disabled = false;
+            submit.textContent = old;
+            selectTab('login');
+          }, 1000);
+        }
+      });
+
+      // Bind strength bar updates
+      const regPw = document.getElementById('reg-password');
+      if (regPw) {
+        regPw.addEventListener('input', (e) => updateStrengthBar(e.target.value));
+      }
+
+      // 2FA modal logic
+      const twofa = document.getElementById('twofa');
+      function open2FA() {
+        if (!twofa) return;
+        twofa.setAttribute('aria-hidden', 'false');
+        const boxes = twofa.querySelectorAll('.code-inputs input');
+        boxes.forEach(b => b.value = '');
+        setTimeout(() => boxes[0].focus(), 0);
+      }
+      function close2FA() { if (twofa) twofa.setAttribute('aria-hidden', 'true'); }
+      function get2FACode() {
+        const boxes = twofa.querySelectorAll('.code-inputs input');
+        return Array.from(boxes).map(b => b.value.trim()).join('');
+      }
+      if (twofa) {
+        const inputs = twofa.querySelectorAll('.code-inputs input');
+        inputs.forEach((inp, idx) => {
+          inp.addEventListener('input', () => {
+            inp.value = inp.value.replace(/[^0-9]/g, '').slice(0, 1);
+            if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+          });
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();
+            if (e.key === 'ArrowLeft' && idx > 0) inputs[idx - 1].focus();
+            if (e.key === 'ArrowRight' && idx < inputs.length - 1) inputs[idx + 1].focus();
+          });
+          inp.addEventListener('paste', (e) => {
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            if (/^[0-9]{6}$/.test(text)) {
+              e.preventDefault();
+              text.split('').forEach((ch, i) => { if (inputs[i]) inputs[i].value = ch; });
+              inputs[inputs.length - 1].focus();
+            }
+          });
+        });
+        document.getElementById('twofa-submit').addEventListener('click', () => {
+          const code = get2FACode();
+          if (code.length !== 6) { showToast('Enter the 6‑digit code.', 'error'); return; }
+          // Demo verification
+          showToast('2FA verified (demo).', 'success');
+          close2FA();
+        });
+        document.getElementById('twofa-cancel').addEventListener('click', () => { close2FA(); });
+        document.getElementById('twofa-resend').addEventListener('click', () => { showToast('Code resent (demo).', 'success'); });
+      }
+
+      // Allow switching with keyboard arrows
+      [tabLogin, tabRegister].forEach((tab, index) => {
+        tab.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            (index === 0 ? tabRegister : tabLogin).focus();
+            (index === 0 ? selectTab('register') : selectTab('login'));
+          }
+        });
+      });
+    </script>
+  </body>
+  </html>
+
