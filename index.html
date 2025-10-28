@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome • Sign in or Create account</title>
+    <title>Login system By Apizzz • Sign in or Create account</title>
     <meta name="color-scheme" content="light dark">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,13 +116,8 @@
         font-weight: 700;
         letter-spacing: 0.2px;
       }
-      .logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--primary), #7bc4ff);
-        box-shadow: 0 6px 16px rgba(106,160,255,0.4);
-      }
+      .logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), #7bc4ff); box-shadow: 0 6px 16px rgba(106,160,255,0.4); }
+      .brand-img { width: 36px; height: 36px; border-radius: 10px; object-fit: contain; display: block; background: #fff0; }
 
       .art h2 {
         margin: 20px 0 12px;
@@ -258,11 +253,23 @@
       .modal .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
       .link-btn { background: transparent; border: 0; color: var(--primary); font-weight: 600; cursor: pointer; }
 
-      /* Panel transition */
-      .panel-wrap { position: relative; min-height: 460px; }
-      .panel { position: absolute; inset: 0; opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; }
-      .panel.active-anim { opacity: 1; transform: translateY(0); pointer-events: auto; }
-      .panel.hidden-anim { opacity: 0; transform: translateY(8px); pointer-events: none; }
+      /* Panel transition - smoother with easing, blur, and directional slide */
+      .panel-wrap { position: relative; min-height: 460px; transition: height 320ms cubic-bezier(0.22, 1, 0.36, 1); }
+      .panel {
+        position: absolute; inset: 0; opacity: 0; pointer-events: none;
+        transform: translateX(0);
+        filter: blur(6px);
+        transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                    filter 320ms cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: opacity, transform, filter;
+      }
+      .panel.active-anim { opacity: 1; transform: translateX(0); filter: blur(0); pointer-events: auto; }
+      .panel.hidden-anim { opacity: 0; filter: blur(4px); }
+      .panel.enter-from-right { transform: translateX(24px); }
+      .panel.enter-from-left { transform: translateX(-24px); }
+      .panel.exit-to-left { transform: translateX(-24px); }
+      .panel.exit-to-right { transform: translateX(24px); }
 
       /* Theme toggle button */
       .theme-toggle {
@@ -319,7 +326,7 @@
     <main class="auth-shell" role="main">
       <section class="art" aria-hidden="true">
         <div>
-          <div class="brand"><div class="logo" aria-hidden="true"></div> System</div>
+          <div class="brand"><img class="brand-img" src="assets/apizzz-logo.png" alt="Apizzz logo" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logo',ariaHidden:'true'}))"> Login system By Apizzz</div>
           <h2>Welcome back</h2>
           <p>Sign in or create an account to continue to your dashboard.</p>
           <div class="badges">
@@ -434,7 +441,7 @@
       </section>
     </main>
     <div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
-    <div class="watermark">system by apizzz</div>
+    <div class="watermark">Login system By Apizzz</div>
     <!-- 2FA Modal -->
     <div id="twofa" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="twofa-title">
       <div class="modal">
@@ -494,6 +501,8 @@
       const tabRegister = document.getElementById('tab-register');
       const panelLogin = document.getElementById('panel-login');
       const panelRegister = document.getElementById('panel-register');
+      const panelWrap = document.querySelector('.panel-wrap');
+      let currentTab = 'login';
       const goRegister = document.getElementById('go-register');
       const goLogin = document.getElementById('go-login');
 
@@ -501,19 +510,43 @@
         const isLogin = which === 'login';
         tabLogin.setAttribute('aria-selected', String(isLogin));
         tabRegister.setAttribute('aria-selected', String(!isLogin));
-        // Animate panels
+        // Animate panels with direction + height tween
         const incoming = isLogin ? panelLogin : panelRegister;
         const outgoing = isLogin ? panelRegister : panelLogin;
+
+        // Prepare height animation
+        if (panelWrap) {
+          const startH = outgoing.offsetHeight;
+          const endH = incoming.offsetHeight || incoming.scrollHeight;
+          panelWrap.style.height = startH + 'px';
+          // Force reflow
+          void panelWrap.offsetHeight;
+          panelWrap.style.height = endH + 'px';
+          setTimeout(() => { panelWrap.style.height = ''; }, 360);
+        }
+
+        // Reset directional classes
+        [incoming, outgoing].forEach(el => {
+          el.classList.remove('enter-from-left','enter-from-right','exit-to-left','exit-to-right');
+        });
+        const goingToRegister = which === 'register';
+        // Direction: login -> register (incoming from right), register -> login (incoming from left)
+        incoming.classList.add(goingToRegister ? 'enter-from-right' : 'enter-from-left');
+        outgoing.classList.add(goingToRegister ? 'exit-to-left' : 'exit-to-right');
+
         incoming.hidden = false;
+        // Force reflow to ensure CSS transition picks up class changes
+        void incoming.offsetHeight;
         incoming.classList.add('active-anim');
         incoming.classList.remove('hidden-anim');
         outgoing.classList.add('hidden-anim');
         outgoing.classList.remove('active-anim');
-        setTimeout(() => { outgoing.hidden = true; }, 230);
+        setTimeout(() => { outgoing.hidden = true; }, 340);
         const title = document.getElementById('authTitle');
         title.textContent = isLogin ? 'Welcome back' : 'Create your account';
         (isLogin ? document.getElementById('login-email') : document.getElementById('reg-name')).focus();
         try { localStorage.setItem('activeTab', which); } catch {}
+        currentTab = which;
       }
 
       tabLogin.addEventListener('click', () => selectTab('login'));
@@ -522,7 +555,7 @@
       (function restoreTab(){
         try {
           const saved = localStorage.getItem('activeTab');
-          if (saved === 'register') selectTab('register');
+          if (saved === 'register') { currentTab = 'login'; selectTab('register'); }
         } catch {}
       })();
       if (goRegister) goRegister.addEventListener('click', () => selectTab('register'));
